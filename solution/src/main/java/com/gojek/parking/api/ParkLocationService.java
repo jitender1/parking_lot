@@ -25,4 +25,7 @@ public interface ParkLocationService {
     List<Slot> getAllAllocatedSlots() throws ServiceException;
 
     List<Slot> getAllUnallocateSlots() throws ServiceException;
+
+    boolean isParkingFUll();
+
 }

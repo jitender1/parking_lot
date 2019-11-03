@@ -4,6 +4,7 @@ import com.gojek.parking.api.ParkLocationService;
 import com.gojek.parking.api.ParkingService;
 import com.gojek.parking.api.ServiceFactory;
 import com.gojek.parking.api.VehicleService;
+import com.gojek.parking.exceptions.Errors;
 import com.gojek.parking.exceptions.ServiceException;
 import com.gojek.parking.model.ParkLocationStatus;
 import com.gojek.parking.model.Slot;
@@ -23,8 +24,11 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     public String parkVehicle(Vehicle vehicle) throws ServiceException {
-        Slot slot = plService.allocateFirstUnusedSlot(vehicle.getRegistrationNumber());
+        if(plService.isParkingFUll()){
+            throw new ServiceException(Errors.SERVICE_ERROR_NO_EMPTY_SLOT);
+        }
         vService.addVehicle(vehicle);
+        Slot slot = plService.allocateFirstUnusedSlot(vehicle.getRegistrationNumber());
         return slot.getSlotId();
     }
 

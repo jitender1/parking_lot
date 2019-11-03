@@ -59,6 +59,10 @@ public class ParkLocationServiceImpl implements ParkLocationService {
         }
     }
 
+    public boolean isParkingFUll() {
+        return  DaoFactory.PARK_LOCATION_DAO.getAllUnUsedSlots().size() == 0 ? true: false;
+    }
+
     public List<Slot> getAllAllocatedSlots() throws ServiceException {
         return DaoFactory.PARK_LOCATION_DAO.getAllAllocatedSlots();
     }
