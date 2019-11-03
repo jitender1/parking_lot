@@ -32,8 +32,11 @@ public class CommandsHandler {
                 if (values.length < 2) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "park <vehiclenumber> <colors>"));
                 }
-                String vehicleRegNumber = values[0];
-                String color = values[1];
+                String vehicleRegNumber = values[0].trim();
+                String color = values[1].trim();
+                if (color.isEmpty() || vehicleRegNumber.isEmpty()) {
+                    throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "park <vehiclenumber> <colors>"));
+                }
                 Vehicle vehicle = new Vehicle(vehicleRegNumber, color, Vehicle.VehicleType.FOUR_WHEELER);
                 String vehicleId = ServiceFactory.getInstance().getParkingService().parkVehicle(vehicle);
                 System.out.println(String.format(Messages.PARKING_SPACE_BLOCKED, vehicleId));
@@ -43,7 +46,10 @@ public class CommandsHandler {
                 if (values.length < 1) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "leave <slotId>"));
                 }
-                String slotId = values[0];
+                String slotId = values[0].trim();
+                if (slotId.isEmpty()) {
+                    throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "leave <slotId>"));
+                }
                 ServiceFactory.getInstance().getParkingService().unParkVehicle(slotId);
                 System.out.println(String.format(Messages.SLOT_FREE, slotId));
                 break;
@@ -61,7 +67,11 @@ public class CommandsHandler {
                 if (values.length < 1) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "registration_numbers_for_cars_with_colour <color>"));
                 }
-                List<String> vehicleIds = ServiceFactory.getInstance().getParkingService().getRegistrationNumbersOfCarsByColor(values[0]);
+                String searchColor = values[0].trim();
+                if (searchColor.isEmpty()) {
+                    throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "registration_numbers_for_cars_with_colour <color>"));
+                }
+                List<String> vehicleIds = ServiceFactory.getInstance().getParkingService().getRegistrationNumbersOfCarsByColor(searchColor);
                 System.out.println(String.join(", ", vehicleIds));
                 break;
 
@@ -69,7 +79,11 @@ public class CommandsHandler {
                 if (values.length < 1) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "slot_numbers_for_cars_with_colour <color>"));
                 }
-                List<String> slots = ServiceFactory.getInstance().getParkingService().getSlotNumbersByColor(values[0]);
+                String slotSearchColor = values[0].trim();
+                if (slotSearchColor.isEmpty()) {
+                    throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "slot_numbers_for_cars_with_colour <color>"));
+                }
+                List<String> slots = ServiceFactory.getInstance().getParkingService().getSlotNumbersByColor(slotSearchColor);
                 System.out.println(String.join(", ", slots));
                 break;
 
@@ -77,7 +91,11 @@ public class CommandsHandler {
                 if (values.length < 1) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "slot_number_for_registration_number <vehicle_reg_number>"));
                 }
-                String slotNumber = ServiceFactory.getInstance().getParkingService().findVehicle(values[0]);
+                String regNumber = values[0].trim();
+                if (regNumber.isEmpty()) {
+                    throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "slot_number_for_registration_number <vehicle_reg_number>"));
+                }
+                String slotNumber = ServiceFactory.getInstance().getParkingService().findVehicle(regNumber);
                 System.out.println(slotNumber);
                 break;
             case "destroy_parking_lot":
