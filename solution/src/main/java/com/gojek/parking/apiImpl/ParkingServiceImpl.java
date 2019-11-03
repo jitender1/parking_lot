@@ -27,44 +27,54 @@ public class ParkingServiceImpl implements ParkingService {
         vService = ServiceFactory.getInstance().getVehicleService();
     }
 
-    public String parkVehicle(String parkLocationId, Vehicle vehicle) throws ServiceException {
-        Slot slot = plService.allocateFirstUnusedSlot(parkLocationId, vehicle.getRegistrationNumber());
-        vService.addVehicle(parkLocationId, vehicle);
+    public String parkVehicle(Vehicle vehicle) throws ServiceException {
+        vService.addVehicle(vehicle);
+        Slot slot = plService.allocateFirstUnusedSlot(vehicle.getRegistrationNumber());
         return slot.getSlotId();
     }
 
-    public void unParkVehicle(String parkLocationId, String slotId) throws ServiceException {
-        String vehicleId  = plService.getVehicleIdBySlotId(parkLocationId, slotId);
-        plService.unAllocateSlot(parkLocationId, slotId);
-        vService.removeVehicle(parkLocationId, vehicleId);
+    public void unParkVehicle(String slotId) throws ServiceException {
+        String vehicleId  = plService.getVehicleIdBySlotId(slotId);
+        vService.removeVehicle(vehicleId);
+        plService.unAllocateSlot(slotId);
     }
 
-    public List<String> getRegistrationNumbersOfCarsByColor(String parkLocationId, String color) throws ServiceException {
-        return vService.fetchVehiclesByColour(parkLocationId, color);
+    public List<String> getRegistrationNumbersOfCarsByColor(String color) throws ServiceException {
+        return vService.fetchVehiclesByColour(color);
     }
 
-    public String findVehicle(String parkLocationId, String vehicleRegistrationNumber) throws ServiceException {
-        return plService.getSlotIdByVehicleId(parkLocationId, vehicleRegistrationNumber);
+    public String findVehicle(String vehicleRegistrationNumber) throws ServiceException {
+        return plService.getSlotIdByVehicleId(vehicleRegistrationNumber);
     }
 
-    public List<String> getSlotNumbersByColor(String parkLocationId, String color) throws ServiceException {
-        List<String> vehicleIds = getRegistrationNumbersOfCarsByColor(parkLocationId, color);
+    public List<String> getSlotNumbersByColor(String color) throws ServiceException {
+        List<String> vehicleIds = getRegistrationNumbersOfCarsByColor(color);
         List<String> slotIds = new ArrayList<>();
         for (String vehicleId : vehicleIds) {
-            slotIds.add(plService.getSlotIdByVehicleId(parkLocationId, vehicleId));
+            slotIds.add(plService.getSlotIdByVehicleId(vehicleId));
         }
         return slotIds;
     }
 
-    public ParkLocationStatus getParkingStatus(String parkLocationId) throws ServiceException {
+    public ParkLocationStatus getParkingStatus() throws ServiceException {
         ParkLocationStatus status = new ParkLocationStatus();
-        status.setParkLocationId(parkLocationId);
-        List<Slot> slots = plService.getAllAllocatedSlots(parkLocationId);
+        List<Slot> slots = plService.getAllAllocatedSlots();
 
         for (Slot slot : slots) {
-            Vehicle vehicle = vService.getVehicle(parkLocationId, slot.getVehicleId());
+            Vehicle vehicle = vService.getVehicle(slot.getVehicleId());
             status.getParkInfos().add(new ParkLocationStatus.ParkInfo(slot.getSlotId(), vehicle.getRegistrationNumber(), vehicle.getColor()));
         }
         return status;
+    }
+
+    @Override
+    public void initializeParkLocation(int numberOfSlots) throws ServiceException {
+        plService.initializeParkLocation(numberOfSlots);
+    }
+
+    @Override
+    public void destroyParkLocation() throws ServiceException {
+        vService.removeAllVehicles();
+        plService.destroyParkLocation();
     }
 }

@@ -5,6 +5,7 @@ import com.gojek.parking.api.ParkingService;
 import com.gojek.parking.api.ServiceFactory;
 import com.gojek.parking.exceptions.ServiceException;
 import com.gojek.parking.model.Vehicle;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,36 +16,31 @@ public class ParkingServiceImplTest {
     private static final ParkLocationService parkLocationService = ServiceFactory.getInstance().getParkLocationService();
     private static final ParkingService parkingService = ServiceFactory.getInstance().getParkingService();
 
-    @Test
-    public void testVehicleParking() throws Exception {
-        parkLocationService.initializeParkLocation("location1", 2);
-        Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId = parkingService.parkVehicle("location1", vehicle);
-        String vehicleId = parkLocationService.getVehicleIdBySlotId("location1", slotId);
-        Assert.assertEquals("vehicle1", vehicleId);
+    @After
+    public void cleanUp() throws  Exception{
+        parkingService.destroyParkLocation();
     }
 
     @Test
-    public void testVehicleParkingInWrongLocation() throws Exception {
-        try {
-            Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-            parkingService.parkVehicle("location2", vehicle);
-        } catch (ServiceException se) {
-            Assert.assertTrue(se.getMessage().contains("Wrong Park Location"));
-        }
-
+    public void testVehicleParking() throws Exception {
+        parkingService.initializeParkLocation(2);
+        Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
+        String slotId = parkingService.parkVehicle(vehicle);
+        String vehicleId = parkLocationService.getVehicleIdBySlotId(slotId);
+        Assert.assertEquals("vehicle1", vehicleId);
     }
 
     @Test
     public void testVehicleParkingWhenParkingIsFull() throws Exception {
         try {
-            parkLocationService.initializeParkLocation("location11", 1);
+            parkingService.initializeParkLocation(1);
             Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-            String slotId = parkingService.parkVehicle("location11", vehicle);
+            String slotId = parkingService.parkVehicle(vehicle);
 
             Vehicle vehicle2 = new Vehicle("vehicle2", "green", Vehicle.VehicleType.FOUR_WHEELER);
-            parkingService.parkVehicle("location11", vehicle);
+            parkingService.parkVehicle(vehicle2);
         } catch (ServiceException se) {
+            System.out.println(se.getMessage());
             Assert.assertTrue(se.getMessage().contains("Sorry, parking lot is full"));
         }
     }
@@ -52,11 +48,11 @@ public class ParkingServiceImplTest {
     @Test
     public void testUnParkingVehicle() throws Exception {
         try {
-            parkLocationService.initializeParkLocation("location2", 2);
+            parkingService.initializeParkLocation(2);
             Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-            String slotId = parkingService.parkVehicle("location2", vehicle);
-            parkingService.unParkVehicle("location2", slotId);
-            parkingService.findVehicle("location2", "vehicle1");
+            String slotId = parkingService.parkVehicle(vehicle);
+            parkingService.unParkVehicle(slotId);
+            parkingService.findVehicle("vehicle1");
         } catch (ServiceException se) {
             Assert.assertTrue(se.getMessage().contains("Not found"));
         }
@@ -64,40 +60,40 @@ public class ParkingServiceImplTest {
 
     @Test
     public void testParkUnParkVehicleMultipleTimes() throws Exception {
-        parkLocationService.initializeParkLocation("location21", 3);
+        parkingService.initializeParkLocation(3);
         Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId = parkingService.parkVehicle("location21", vehicle);
+        String slotId = parkingService.parkVehicle(vehicle);
 
         Vehicle vehicle2 = new Vehicle("vehicle2", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        parkingService.parkVehicle("location21", vehicle2);
+        parkingService.parkVehicle(vehicle2);
 
-        parkingService.unParkVehicle("location21", slotId);
+        parkingService.unParkVehicle(slotId);
 
-        slotId = parkingService.parkVehicle("location21", vehicle);
+        slotId = parkingService.parkVehicle(vehicle);
 
-        String slotIdFound = parkingService.findVehicle("location21", "vehicle1");
+        String slotIdFound = parkingService.findVehicle("vehicle1");
         Assert.assertEquals(slotId, slotIdFound);
     }
 
     @Test
     public void testFindVehicle() throws Exception {
-        parkLocationService.initializeParkLocation("location3", 2);
+        parkLocationService.initializeParkLocation(2);
         Vehicle vehicle = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId = parkingService.parkVehicle("location3", vehicle);
-        String searchedSlotId = parkingService.findVehicle("location3", "vehicle1");
+        String slotId = parkingService.parkVehicle(vehicle);
+        String searchedSlotId = parkingService.findVehicle("vehicle1");
         Assert.assertEquals(slotId, searchedSlotId);
     }
 
     @Test
     public void testGetSlotNumbersByColor() throws Exception {
-        parkLocationService.initializeParkLocation("location4", 2);
+        parkingService.initializeParkLocation(2);
         Vehicle vehicle1 = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId1 = parkingService.parkVehicle("location4", vehicle1);
+        String slotId1 = parkingService.parkVehicle(vehicle1);
 
         Vehicle vehicle2 = new Vehicle("vehicle2", "Green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId2 = parkingService.parkVehicle("location4", vehicle2);
+        String slotId2 = parkingService.parkVehicle(vehicle2);
 
-        List<String> slotIds = parkingService.getSlotNumbersByColor("location4", "green");
+        List<String> slotIds = parkingService.getSlotNumbersByColor("green");
         Assert.assertEquals(2, slotIds.size());
         Assert.assertTrue(slotIds.contains(slotId1));
         Assert.assertTrue(slotIds.contains(slotId2));
@@ -105,14 +101,14 @@ public class ParkingServiceImplTest {
 
     @Test
     public void testGetVehicleNumbersByColor() throws Exception {
-        parkLocationService.initializeParkLocation("location5", 2);
+        parkingService.initializeParkLocation(2);
         Vehicle vehicle1 = new Vehicle("vehicle1", "green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId1 = parkingService.parkVehicle("location5", vehicle1);
+        String slotId1 = parkingService.parkVehicle(vehicle1);
 
         Vehicle vehicle2 = new Vehicle("vehicle2", "Green", Vehicle.VehicleType.FOUR_WHEELER);
-        String slotId2 = parkingService.parkVehicle("location5", vehicle2);
+        String slotId2 = parkingService.parkVehicle(vehicle2);
 
-        List<String> vehicleIds = parkingService.getRegistrationNumbersOfCarsByColor("location5", "green");
+        List<String> vehicleIds = parkingService.getRegistrationNumbersOfCarsByColor("green");
         Assert.assertEquals(2, vehicleIds.size());
         Assert.assertTrue(vehicleIds.contains("vehicle1"));
         Assert.assertTrue(vehicleIds.contains("vehicle2"));

@@ -10,11 +10,13 @@ import java.util.List;
  */
 public interface VehicleService {
 
-    List<String> fetchVehiclesByColour(String parkLocationId, String color) throws ServiceException;
+    List<String> fetchVehiclesByColour(String color) throws ServiceException;
 
-    void addVehicle(String parkLocationId, Vehicle vehicle) throws ServiceException;
+    void addVehicle(Vehicle vehicle) throws ServiceException;
 
-    void removeVehicle(String parkLocationId, String registrationNumber) throws ServiceException ;
+    void removeVehicle(String registrationNumber) throws ServiceException;
 
-    Vehicle getVehicle(String parkLocationId, String registrationNumber) throws ServiceException;
+    Vehicle getVehicle(String registrationNumber) throws ServiceException;
+
+    void removeAllVehicles() throws ServiceException;
 }

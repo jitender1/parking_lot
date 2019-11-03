@@ -1,5 +1,7 @@
 package com.gojek.parking.model;
 
+import java.util.Objects;
+
 /*
  * Object Oriented representation of Vehicle
  * This can be extended to any specific vehicle type like 4 Wheeler, 2 wheeler etc.

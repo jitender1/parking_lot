@@ -10,15 +10,19 @@ import java.util.List;
  */
 public interface ParkLocationService {
 
-    Slot allocateFirstUnusedSlot(String parkLocationId, String vehicleId) throws ServiceException;
+    Slot allocateFirstUnusedSlot(String vehicleId) throws ServiceException;
 
-    void unAllocateSlot(String parkLocationId, String slotId) throws ServiceException;
+    void unAllocateSlot(String slotId) throws ServiceException;
 
-    void initializeParkLocation(String parkLocationId, int numberOfSlots) throws ServiceException;
+    void initializeParkLocation(int numberOfSlots) throws ServiceException;
 
-    String getSlotIdByVehicleId(String parkLocationId, String vehicleId) throws ServiceException;
+    void destroyParkLocation() throws ServiceException;
 
-    String getVehicleIdBySlotId(String parkLocationId, String slotId) throws ServiceException;
+    String getSlotIdByVehicleId(String vehicleId) throws ServiceException;
 
-    List<Slot> getAllAllocatedSlots(String parkLocationId) throws ServiceException;
+    String getVehicleIdBySlotId(String slotId) throws ServiceException;
+
+    List<Slot> getAllAllocatedSlots() throws ServiceException;
+
+    List<Slot> getAllUnallocateSlots() throws ServiceException;
 }

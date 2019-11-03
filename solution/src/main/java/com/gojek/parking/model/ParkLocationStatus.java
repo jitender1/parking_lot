@@ -7,20 +7,10 @@ import java.util.List;
  * Object Oriented representation of Parking Status at Location
  */
 public class ParkLocationStatus {
-    private String parkLocationId;
-
     private List<ParkInfo> parkInfos;
 
     public ParkLocationStatus() {
         this.parkInfos = new ArrayList<ParkInfo>();
-    }
-
-    public String getParkLocationId() {
-        return parkLocationId;
-    }
-
-    public void setParkLocationId(String parkLocationId) {
-        this.parkLocationId = parkLocationId;
     }
 
     public List<ParkInfo> getParkInfos() {

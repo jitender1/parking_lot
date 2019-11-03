@@ -11,15 +11,19 @@ import java.util.List;
  */
 public interface ParkingService {
 
-    String parkVehicle(String parkLocationId, Vehicle vehicle) throws ServiceException;
+    String parkVehicle(Vehicle vehicle) throws ServiceException;
 
-    void unParkVehicle(String parkLocationId, String slotId) throws ServiceException;
+    void unParkVehicle(String slotId) throws ServiceException;
 
-    String findVehicle(String parkLocationid, String vehicleId) throws ServiceException;
+    String findVehicle(String vehicleId) throws ServiceException;
 
-    List<String> getRegistrationNumbersOfCarsByColor(String parkLocationId, String color) throws ServiceException;
+    List<String> getRegistrationNumbersOfCarsByColor(String color) throws ServiceException;
 
-    List<String> getSlotNumbersByColor(String parkLocationId, String color) throws ServiceException;
+    List<String> getSlotNumbersByColor(String color) throws ServiceException;
 
-    ParkLocationStatus getParkingStatus(String parkLocationId) throws ServiceException;
+    ParkLocationStatus getParkingStatus() throws ServiceException;
+
+    void initializeParkLocation(int numberOfSlots) throws ServiceException;
+
+    void destroyParkLocation() throws ServiceException;
 }

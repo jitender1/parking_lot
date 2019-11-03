@@ -12,10 +12,12 @@ import java.util.Map;
 
 public class VehicleDao {
     private static VehicleDao vehicleDao;
-    Map<String, VehicleInfo> locationToVehicleStoreMap;
+    Map<String, List<String>> colorToVehiclesMap;
+    Map<String, Vehicle> vehicleNumberToVehicleMap;
 
     private VehicleDao() {
-        locationToVehicleStoreMap = new HashMap<>();
+        colorToVehiclesMap = new HashMap<>();
+        vehicleNumberToVehicleMap = new HashMap<>();
     }
 
     public static VehicleDao getInstance() {
@@ -25,100 +27,54 @@ public class VehicleDao {
         return vehicleDao;
     }
 
-    public void addVehicle(String parkLocationId, Vehicle vehicle) throws DaoException {
-        final String vehicleId = vehicle.getRegistrationNumber();
-        final String color = vehicle.getColor().toLowerCase();
-        if (locationToVehicleStoreMap.containsKey(parkLocationId)) {
-            VehicleInfo store = locationToVehicleStoreMap.get(parkLocationId);
-            Map<String, List<String>> colorToVehiclesMap = store.getColorToVehiclesMap();
-            Map<String, Vehicle> vehicleNumberToVehicleMap = store.getVehicleNumberToVehicleMap();
-            if (!vehicleNumberToVehicleMap.containsKey(vehicleId)) {
-                vehicleNumberToVehicleMap.put(vehicleId, vehicle);
-                if (colorToVehiclesMap.containsKey(color)) {
-                    colorToVehiclesMap.get(color).add(vehicle.getRegistrationNumber());
-                } else {
-                    List<String> vehicles = new ArrayList<>();
-                    vehicles.add(vehicle.getRegistrationNumber());
-                    colorToVehiclesMap.put(color, vehicles);
-                }
-                return;
-            }
-            throw new DaoException(String.format(Errors.DAO_ERROR_VEHICLE_EXISTS, vehicleId));
+    public void addVehicle(Vehicle vehicle) throws DaoException {
+
+        if (vehicleNumberToVehicleMap.containsKey(vehicle.getRegistrationNumber())) {
+            throw new DaoException(String.format(Errors.DAO_ERROR_VEHICLE_EXISTS, vehicle.getRegistrationNumber()));
         } else {
-            VehicleInfo vehiclesInfo = new VehicleInfo();
+            vehicleNumberToVehicleMap.put(vehicle.getRegistrationNumber(), vehicle);
+        }
+
+        String colorLowerCase = vehicle.getColor().toLowerCase();
+        if (colorToVehiclesMap.containsKey(colorLowerCase)) {
+            colorToVehiclesMap.get(colorLowerCase).add(vehicle.getRegistrationNumber());
+        } else {
             List<String> vehicles = new ArrayList<>();
             vehicles.add(vehicle.getRegistrationNumber());
-            vehiclesInfo.getColorToVehiclesMap().put(vehicle.getColor().toLowerCase(), vehicles);
-            vehiclesInfo.getVehicleNumberToVehicleMap().put(vehicle.getRegistrationNumber(), vehicle);
-            locationToVehicleStoreMap.put(parkLocationId, vehiclesInfo);
+            colorToVehiclesMap.put(vehicle.getColor().toLowerCase(), vehicles);
         }
     }
 
-    public void removeVehicle(String parkLocationId, String vehicleId) throws DaoException {
-        if (locationToVehicleStoreMap.containsKey(parkLocationId)) {
-            VehicleInfo vehiclesInfo = locationToVehicleStoreMap.get(parkLocationId);
-            Map<String, List<String>> colorToVehiclesMap = vehiclesInfo.getColorToVehiclesMap();
-            Map<String, Vehicle> vehicleNumberToVehicleMap = vehiclesInfo.getVehicleNumberToVehicleMap();
-            if (vehicleNumberToVehicleMap.containsKey(vehicleId)) {
-                Vehicle vehicle = vehicleNumberToVehicleMap.get(vehicleId);
-                String color = vehicle.getColor().toLowerCase();
-                vehicleNumberToVehicleMap.remove(vehicleId);
-                if (colorToVehiclesMap.containsKey(color)) {
-                    colorToVehiclesMap.get(color).remove(vehicle);
-                    return;
-                }
+    public void removeVehicle(String vehicleId) throws DaoException {
+        if (vehicleNumberToVehicleMap.containsKey(vehicleId)) {
+            Vehicle vehicle = vehicleNumberToVehicleMap.get(vehicleId);
+            String color = vehicle.getColor().toLowerCase();
+            vehicleNumberToVehicleMap.remove(vehicleId);
+            if (colorToVehiclesMap.containsKey(color)) {
+                boolean st = colorToVehiclesMap.get(color).remove(vehicle.getRegistrationNumber());
+                return;
             }
-            throw new DaoException(String.format(Errors.DAO_ERROR_NO_VEHICLE, vehicleId));
         }
-        throw new DaoException(String.format(Errors.DAO_ERROR_WRONG_PARK_LOCATION, parkLocationId));
+        throw new DaoException(String.format(Errors.DAO_ERROR_NO_VEHICLE, vehicleId));
     }
 
-    public Vehicle getVehicleById(String parkLocationId, String vehicleId) throws DaoException {
-        if (locationToVehicleStoreMap.containsKey(parkLocationId)) {
-            VehicleInfo store = locationToVehicleStoreMap.get(parkLocationId);
-            Map<String, Vehicle> vehicleNumberToVehicleMap = store.getVehicleNumberToVehicleMap();
-            if (vehicleNumberToVehicleMap.containsKey(vehicleId)) {
-                return vehicleNumberToVehicleMap.get(vehicleId);
-            }
-            throw new DaoException(Errors.DAO_ERROR_NO_VEHICLE);
+    public Vehicle getVehicleById(String vehicleId) throws DaoException {
+        if (vehicleNumberToVehicleMap.containsKey(vehicleId)) {
+            return vehicleNumberToVehicleMap.get(vehicleId);
         }
-        throw new DaoException(String.format(Errors.DAO_ERROR_WRONG_PARK_LOCATION, parkLocationId));
+        throw new DaoException(Errors.DAO_ERROR_NO_VEHICLE);
     }
 
-    public List<String> getAllVehiclesByColor(String parkLocationId, String color) {
+    public List<String> getAllVehiclesByColor(String color) {
         String colorLowerCase = color.toLowerCase();
-        if (locationToVehicleStoreMap.containsKey(parkLocationId)) {
-            VehicleInfo store = locationToVehicleStoreMap.get(parkLocationId);
-            Map<String, List<String>> colorToVehiclesMap = store.getColorToVehiclesMap();
-            if (colorToVehiclesMap.containsKey(colorLowerCase)) {
-                return colorToVehiclesMap.get(colorLowerCase);
-            }
-            return Collections.EMPTY_LIST;
+        if (colorToVehiclesMap.containsKey(colorLowerCase)) {
+            return colorToVehiclesMap.get(colorLowerCase);
         }
         return Collections.EMPTY_LIST;
     }
 
-    public void removeAllVehicles(String parkLocationId) {
-        if (locationToVehicleStoreMap.containsKey(parkLocationId)) {
-            locationToVehicleStoreMap.remove(parkLocationId);
-        }
-    }
-
-    class VehicleInfo {
-        Map<String, List<String>> colorToVehiclesMap;
-        Map<String, Vehicle> vehicleNumberToVehicleMap;
-
-        VehicleInfo() {
-            colorToVehiclesMap = new HashMap<String, List<String>>();
-            vehicleNumberToVehicleMap = new HashMap<String, Vehicle>();
-        }
-
-        public Map<String, List<String>> getColorToVehiclesMap() {
-            return colorToVehiclesMap;
-        }
-
-        public Map<String, Vehicle> getVehicleNumberToVehicleMap() {
-            return vehicleNumberToVehicleMap;
-        }
+    public void removeAllVehicles() {
+        colorToVehiclesMap = new HashMap<>();
+        vehicleNumberToVehicleMap = new HashMap<>();
     }
 }
