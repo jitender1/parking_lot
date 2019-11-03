@@ -1,6 +1,7 @@
 package com.gojek.parking.dao;
 
 import com.gojek.parking.exceptions.DaoException;
+import com.gojek.parking.exceptions.ServiceException;
 import com.gojek.parking.model.Slot;
 import org.junit.After;
 import org.junit.Assert;
@@ -117,6 +118,16 @@ public class SlotDaoTest {
             parkLocationDao.getVehicleOnSlot("2");
         }catch (DaoException de){
             Assert.assertTrue(de.getMessage().contains("Not found"));
+        }
+    }
+
+    @Test
+    public void testAllocateInvalidSlotToVehicle() {
+        try {
+            Slot slot = new Slot("1");
+            parkLocationDao.allocateSlotToVehicle(slot);
+        }catch(DaoException de){
+            Assert.assertTrue(de.getMessage().contains("Wrong Slot 1"));
         }
     }
 }

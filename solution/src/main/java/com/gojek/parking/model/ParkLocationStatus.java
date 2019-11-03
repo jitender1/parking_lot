@@ -17,10 +17,6 @@ public class ParkLocationStatus {
         return parkInfos;
     }
 
-    public void setParkInfos(List<ParkInfo> parkInfos) {
-        this.parkInfos = parkInfos;
-    }
-
     public static class ParkInfo {
         private String slotId;
         private String vehicleId;
@@ -36,24 +32,12 @@ public class ParkLocationStatus {
             return slotId;
         }
 
-        public void setSlotId(String slotId) {
-            this.slotId = slotId;
-        }
-
         public String getVehicleId() {
             return vehicleId;
         }
 
-        public void setVehicleId(String vehicleId) {
-            this.vehicleId = vehicleId;
-        }
-
         public String getColor() {
             return color;
-        }
-
-        public void setColor(String color) {
-            this.color = color;
         }
     }
 }

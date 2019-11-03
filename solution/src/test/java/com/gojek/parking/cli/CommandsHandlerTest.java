@@ -3,7 +3,6 @@ package com.gojek.parking.cli;
 import com.gojek.parking.api.ServiceFactory;
 import com.gojek.parking.exceptions.CommandInputException;
 import com.gojek.parking.model.Slot;
-import com.sun.tools.classfile.Code_attribute;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;

@@ -15,10 +15,6 @@ public class Slot  implements Comparable<Slot>{
         return slotId;
     }
 
-    public void setSlotId(String slotId) {
-        this.slotId = slotId;
-    }
-
     public String getVehicleId() {
         return vehicleId;
     }
@@ -33,12 +29,6 @@ public class Slot  implements Comparable<Slot>{
         if (o == null || getClass() != o.getClass()) return false;
         Slot slot = (Slot) o;
         return slot.slotId.equals(slotId);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return slotId.hashCode();
     }
 
     public int compareTo(Slot o) {

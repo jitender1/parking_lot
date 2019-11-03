@@ -17,11 +17,6 @@ public class ParkingServiceImpl implements ParkingService {
     private ParkLocationService plService;
     private VehicleService vService;
 
-    public ParkingServiceImpl(ParkLocationService plService, VehicleService vService) {
-        this.plService = plService;
-        this.vService = vService;
-    }
-
     public ParkingServiceImpl() {
         plService = ServiceFactory.getInstance().getParkLocationService();
         vService = ServiceFactory.getInstance().getVehicleService();

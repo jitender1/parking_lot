@@ -12,7 +12,7 @@ import java.util.List;
 public class ParkLocationServiceImpl implements ParkLocationService {
 
     public void initializeParkLocation(int numberOfSlots) throws ServiceException {
-        if(DaoFactory.SLOT_DAO.getAllUnUsedSlots().size() ==0 && DaoFactory.SLOT_DAO.getAllAllocatedSlots().size() == 0){
+        if(DaoFactory.SLOT_DAO.getAllUnUsedSlots().size() == 0 && DaoFactory.SLOT_DAO.getAllAllocatedSlots().size() == 0){
             for (int slotNumber = 1; slotNumber <= numberOfSlots; slotNumber++) {
                 DaoFactory.SLOT_DAO.createSlot(new Slot(String.valueOf(slotNumber)));
             }
