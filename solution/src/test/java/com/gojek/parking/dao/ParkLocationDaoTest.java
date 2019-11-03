@@ -1,14 +1,14 @@
 package com.gojek.parking.dao;
 
+import com.gojek.parking.api.ServiceFactory;
 import com.gojek.parking.exceptions.DaoException;
-import com.gojek.parking.exceptions.ServiceException;
 import com.gojek.parking.model.Slot;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SlotDaoTest {
+public class ParkLocationDaoTest {
 
     private ParkLocationDao parkLocationDao = ParkLocationDao.getInstance();
 
