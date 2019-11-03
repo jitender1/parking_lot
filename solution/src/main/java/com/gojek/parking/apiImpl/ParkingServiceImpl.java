@@ -23,8 +23,8 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     public String parkVehicle(Vehicle vehicle) throws ServiceException {
-        vService.addVehicle(vehicle);
         Slot slot = plService.allocateFirstUnusedSlot(vehicle.getRegistrationNumber());
+        vService.addVehicle(vehicle);
         return slot.getSlotId();
     }
 
