@@ -19,9 +19,13 @@ public class CommandsHandler {
                 if (values.length < 1) {
                     throw new CommandInputException(String.format(Errors.INPUT_ERROR_WRONG_COMMAND_FORMAT, "create_parking_lot <lot_size>"));
                 }
-                int numOfSlots = Integer.valueOf(values[0]);
-                ServiceFactory.getInstance().getParkLocationService().initializeParkLocation(numOfSlots);
-                System.out.println(String.format(Messages.PARKING_LOT_CREATED, numOfSlots));
+                try {
+                    int numOfSlots = Integer.valueOf(values[0]);
+                    ServiceFactory.getInstance().getParkLocationService().initializeParkLocation(numOfSlots);
+                    System.out.println(String.format(Messages.PARKING_LOT_CREATED, numOfSlots));
+                } catch (NumberFormatException ne) {
+                    throw new ServiceException(Errors.SERVICE_ERROR_INVALID_PARK_LOT_SIZE);
+                }
                 break;
 
             case "park":

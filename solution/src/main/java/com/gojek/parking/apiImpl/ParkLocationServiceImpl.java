@@ -11,7 +11,12 @@ import java.util.List;
 
 public class ParkLocationServiceImpl implements ParkLocationService {
 
+    private static int MAX_SLOTS = 1000;
+
     public void initializeParkLocation(int numberOfSlots) throws ServiceException {
+        if (numberOfSlots < 0 || numberOfSlots > MAX_SLOTS) {
+            new ServiceException(Errors.SERVICE_ERROR_INVALID_PARK_LOT_SIZE);
+        }
         if(DaoFactory.PARK_LOCATION_DAO.getAllUnUsedSlots().size() == 0 && DaoFactory.PARK_LOCATION_DAO.getAllAllocatedSlots().size() == 0){
             for (int slotNumber = 1; slotNumber <= numberOfSlots; slotNumber++) {
                 DaoFactory.PARK_LOCATION_DAO.createSlot(new Slot(String.valueOf(slotNumber)));

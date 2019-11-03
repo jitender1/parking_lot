@@ -16,4 +16,5 @@ public class Errors {
 
     public static String SERVICE_ERROR_PARK_LOT_ALREADY_INITIALIZED = "Parking Lot already initialized";
 
+    public static String SERVICE_ERROR_INVALID_PARK_LOT_SIZE = "Invalid Parking Lot size";
 }
